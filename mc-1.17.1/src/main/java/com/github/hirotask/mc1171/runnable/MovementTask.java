@@ -1,6 +1,5 @@
 package com.github.hirotask.mc1171.runnable;
 
-import jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

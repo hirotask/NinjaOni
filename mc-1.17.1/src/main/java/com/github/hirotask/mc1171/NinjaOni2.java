@@ -1,7 +1,6 @@
 package com.github.hirotask.mc1171;
 
 import dev.jorel.commandapi.CommandAPI;
-import jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.listener.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

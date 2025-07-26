@@ -1,6 +1,5 @@
 package com.github.hirotask.mc1171.listener;
 
-import jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.*;
 import com.github.hirotask.mc1171.inventory.ItemManager;
 import com.github.hirotask.mc1171.inventory.NinjaInventory;
 import com.github.hirotask.mc1171.inventory.item.NinjaItem;

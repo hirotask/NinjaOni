@@ -1,15 +1,13 @@
 package com.github.hirotask.mc1171.inventory;
 
-import jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.inventory.item.items.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class ItemManager {
 

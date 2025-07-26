@@ -1,11 +1,11 @@
 package com.github.hirotask.mc1171.listener;
 
-import jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;

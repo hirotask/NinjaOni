@@ -1,8 +1,9 @@
 package com.github.hirotask.mc1171.listener;
 
-import jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.*;
 import com.github.hirotask.mc1171.runnable.GetMoneyTask;
 import com.github.hirotask.mc1171.runnable.PlayerOpenTask;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -22,9 +23,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NinjaMoveListener implements Listener {
 
