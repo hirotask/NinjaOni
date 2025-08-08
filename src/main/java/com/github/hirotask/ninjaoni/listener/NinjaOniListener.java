@@ -1,5 +1,7 @@
 package com.github.hirotask.ninjaoni.listener;
 
+import com.github.hirotask.ninjaoni.Game;
+import com.github.hirotask.ninjaoni.Ninja;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,7 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 //プレイヤーと鬼に関するリスナー
 public class NinjaOniListener implements Listener {
 
-    private com.github.hirotask.ninjaoni.NinjaOni2 plugin;
+    private com.github.hirotask.ninjaoni.NinjaOni plugin;
 
     private final Material[] GUIBlocks = {
             Material.CRAFTING_TABLE,
@@ -43,14 +45,14 @@ public class NinjaOniListener implements Listener {
             Material.STONECUTTER
     };
 
-    public NinjaOniListener(com.github.hirotask.ninjaoni.NinjaOni2 plugin) {
+    public NinjaOniListener(com.github.hirotask.ninjaoni.NinjaOni plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
-        if (com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
+        if (this.plugin.getGame().getGameState() != Game.GameState.INGAME) {
             return;
         }
 
@@ -58,12 +60,12 @@ public class NinjaOniListener implements Listener {
             Player damager = (Player) e.getDamager();
             Player player = (Player) e.getEntity();
 
-            if (!com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(damager) || !com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) {
+            if (!this.plugin.getNinjaManager().containsNinja(damager) || !this.plugin.getNinjaManager().containsNinja(player)) {
                 return;
             }
 
-            com.github.hirotask.ninjaoni.Ninja damagerNinja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(damager);
-            com.github.hirotask.ninjaoni.Ninja playerNinja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+            Ninja damagerNinja = this.plugin.getNinjaManager().getNinjaPlayer(damager);
+            Ninja playerNinja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
             if (damagerNinja.getTeam() != com.github.hirotask.ninjaoni.Game.Teams.ONI) {
                 return;
@@ -103,7 +105,7 @@ public class NinjaOniListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent e) {
         if(e.getEntity() instanceof ItemFrame) {
-            if(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.NONE) {
+            if(this.plugin.getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.NONE) {
                 e.setCancelled(true);
             }
         }

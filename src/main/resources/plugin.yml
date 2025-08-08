@@ -1,7 +1,0 @@
-name: NinjaOni
-version: '${version}'
-main: jp.ne.sakura.erudoblog.ninjaoni2.ninjaoni2.NinjaOni2
-api-version: 1.17
-authors: [ erudo ]
-website: https://github.com/erudosan0524-JP
-depend: [ProtocolLib, CommandAPI]

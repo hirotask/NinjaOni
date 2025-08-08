@@ -1,5 +1,9 @@
 package com.github.hirotask.ninjaoni.runnable;
 
+import com.github.hirotask.ninjaoni.Game;
+import com.github.hirotask.ninjaoni.Ninja;
+import com.github.hirotask.ninjaoni.NinjaOni;
+import com.github.hirotask.ninjaoni.utils.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -12,24 +16,28 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class MovementTask extends BukkitRunnable {
 
-    private final com.github.hirotask.ninjaoni.NinjaOni2 plugin = com.github.hirotask.ninjaoni.NinjaOniAPI.INSTANCE.getPlugin();
+    private final NinjaOni plugin;
+
+    public MovementTask(NinjaOni ninjaOni) {
+        this.plugin = ninjaOni;
+    }
 
     @Override
     public void run() {
-        if(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.NONE) {
+        if(this.plugin.getGame().getGameState() == Game.GameState.NONE) {
             this.cancel();
         }
 
-        if(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
+        if(this.plugin.getGame().getGameState() != Game.GameState.INGAME) {
             return;
         }
 
         for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-            if(!com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) return;
+            if(!this.plugin.getNinjaManager().containsNinja(player)) return;
 
-            com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+            Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
-            if(ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
+            if(ninja.getTeam() == Game.Teams.PLAYER) {
                 if(ninja.isLocked()) { //捕まっている時の処理
                     if(ninja.getHp() > 0) {
                         ninja.decHP();
@@ -42,10 +50,10 @@ public class MovementTask extends BukkitRunnable {
                             p.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.5F,1);
                         }
 
-                        com.github.hirotask.ninjaoni.utils.MessageManager.sendAll(ChatColor.RED + ninja.getPlayer().getName() + "が脱落した");
+                        MessageManager.sendAll(ChatColor.RED + ninja.getPlayer().getName() + "が脱落した");
                         ninja.setTeam(com.github.hirotask.ninjaoni.Game.Teams.SPECTATOR);
-                        com.github.hirotask.ninjaoni.NinjaManager.getInstance().updateNinjaPlayer(ninja);
-                        com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().addEntry(ninja.getPlayer(), com.github.hirotask.ninjaoni.Game.Teams.SPECTATOR);
+                        this.plugin.getNinjaManager().updateNinjaPlayer(ninja);
+                        this.plugin.getGame().addEntry(ninja.getPlayer(), Game.Teams.SPECTATOR);
                         ninja.getPlayer().setGameMode(GameMode.SPECTATOR);
                     }
                 }

@@ -1,5 +1,6 @@
 package com.github.hirotask.ninjaoni.inventory;
 
+import com.github.hirotask.ninjaoni.NinjaOni;
 import java.util.List;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -15,13 +16,13 @@ public final class ItemManager {
     @Getter
     public final List<ItemStack> items = new java.util.ArrayList<>();
 
-    public ItemManager() {
-        ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Kageoi());
+    public ItemManager(NinjaOni ninjaOni) {
+        ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Kageoi(ninjaOni));
         ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Kakure());
-        ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Kemuri());
+        ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Kemuri(ninjaOni));
         ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Kunai());
         ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Nenchaku());
-        ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Shukuchi());
+        ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Shukuchi(ninjaOni));
         ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Choyaku());
         ninjaItems.add(new com.github.hirotask.ninjaoni.inventory.item.items.Musasabi());
     }

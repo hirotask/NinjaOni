@@ -1,5 +1,6 @@
 package com.github.hirotask.ninjaoni.inventory.item.items;
 
+import com.github.hirotask.ninjaoni.NinjaOni;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -13,6 +14,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Kemuri implements com.github.hirotask.ninjaoni.inventory.item.NinjaItem {
+
+    private final NinjaOni plugin;
+
+    public Kemuri(NinjaOni plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Material type() {
@@ -83,7 +90,7 @@ public class Kemuri implements com.github.hirotask.ninjaoni.inventory.item.Ninja
                     count++;
                 }
             }
-        }.runTaskTimer(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getPlugin(), 0, 1);
+        }.runTaskTimer(this.plugin, 0, 1);
     }
 
 

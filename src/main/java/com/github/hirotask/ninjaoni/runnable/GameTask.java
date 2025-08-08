@@ -1,5 +1,11 @@
 package com.github.hirotask.ninjaoni.runnable;
 
+import com.github.hirotask.ninjaoni.Game;
+import com.github.hirotask.ninjaoni.Ninja;
+import com.github.hirotask.ninjaoni.NinjaOni;
+import com.github.hirotask.ninjaoni.inventory.ItemManager;
+import java.util.Collections;
+import java.util.List;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -23,40 +29,39 @@ public class GameTask extends BukkitRunnable {
     private int count;
     private final int MAX_COUNT;
 
-    private com.github.hirotask.ninjaoni.NinjaOni2 plugin;
+    private com.github.hirotask.ninjaoni.NinjaOni plugin;
     private BossBar bar;
 
     private final int moneyAmount;
 
-    public GameTask(int count) {
-        this.plugin = com.github.hirotask.ninjaoni.NinjaOniAPI.INSTANCE.getPlugin();
+    public GameTask(NinjaOni ninjaOni, int count) {
+        this.plugin = ninjaOni;
 
         if (count > 0) {
             this.count = count;
             this.MAX_COUNT = count;
         } else {
-            this.count = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getGameTime();
-            this.MAX_COUNT = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getGameTime();
+            this.count = this.plugin.getMyConfig().getGameTime();
+            this.MAX_COUNT = this.plugin.getMyConfig().getGameTime();
         }
 
-        this.moneyAmount = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getMoneyAmount();
+        this.moneyAmount = this.plugin.getMyConfig().getMoneyAmount();
 
         this.bar = Bukkit.getServer().createBossBar("残り時間:" + this.MAX_COUNT, BarColor.BLUE, BarStyle.SEGMENTED_10, BarFlag.CREATE_FOG);
     }
 
     @Override
     public void run() {
-        if (com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
-            int oniCount = com.github.hirotask.ninjaoni.NinjaManager.getInstance().countNinja(com.github.hirotask.ninjaoni.Game.Teams.ONI);
-            int playerCount = com.github.hirotask.ninjaoni.NinjaManager.getInstance().countNinja(com.github.hirotask.ninjaoni.Game.Teams.PLAYER);
-            int lockedCount = com.github.hirotask.ninjaoni.NinjaManager.getInstance().countNinja(com.github.hirotask.ninjaoni.Game.Teams.LOCKEDPLAYER);
+        if (this.plugin.getGame().getGameState() == Game.GameState.INGAME) {
+            int oniCount = this.plugin.getNinjaManager().countNinja(com.github.hirotask.ninjaoni.Game.Teams.ONI);
+            int playerCount = this.plugin.getNinjaManager().countNinja(com.github.hirotask.ninjaoni.Game.Teams.PLAYER);
+            int lockedCount = this.plugin.getNinjaManager().countNinja(com.github.hirotask.ninjaoni.Game.Teams.LOCKEDPLAYER);
 
             if(count != MAX_COUNT && count % PACKAGE_TIME == 0) {
 
+                List<Location> locList = this.plugin.getGame().getBorderLocs();
 
-                java.util.List<Location> locList = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getBorderLocs();
-
-                java.util.Collections.shuffle(locList);
+                Collections.shuffle(locList);
 
                 for(int i=0; i < moneyAmount; i++) {
                     Location loc = locList.get(i);
@@ -71,7 +76,7 @@ public class GameTask extends BukkitRunnable {
                     stand.setCanPickupItems(false);
                     stand.setInvulnerable(true);
                     stand.setCustomName("money");
-                    stand.setHelmet(com.github.hirotask.ninjaoni.inventory.ItemManager.getMoney());
+                    stand.setHelmet(ItemManager.getMoney());
                 }
 
             }
@@ -87,7 +92,7 @@ public class GameTask extends BukkitRunnable {
                     subTitle = "引き分け！";
                 }
 
-                com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().gameEnd();
+                this.plugin.getGame().gameEnd();
                 for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                     player.sendTitle("GAME OVER!", subTitle, 10, 70, 2);
                 }
@@ -100,8 +105,8 @@ public class GameTask extends BukkitRunnable {
                 this.cancel();
             } else {
                 for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                    if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player) != null) {
-                        com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+                    if (this.plugin.getNinjaManager().getNinjaPlayer(player) != null) {
+                        Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
                         //表示処理
                         bar.addPlayer(player);
@@ -110,13 +115,13 @@ public class GameTask extends BukkitRunnable {
                         bar.setTitle("残り時間: " + count);
 
                         StringBuilder sb = new StringBuilder();
-                        if(ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
+                        if(ninja.getTeam() == Game.Teams.PLAYER) {
                             sb.append("残り逃走者: ");
                             sb.append(playerCount);
                             sb.append(" | ");
                             sb.append("残りHP: ");
                             sb.append(ninja.getHp());
-                        }else if(ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.ONI) {
+                        }else if(ninja.getTeam() == Game.Teams.ONI) {
                             sb.append("残り逃走者: ");
                             sb.append(playerCount);
                             sb.append(" | ");
@@ -140,17 +145,17 @@ public class GameTask extends BukkitRunnable {
                         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
 
                         //鬼が近づいてきたときの処理
-                        if(ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
+                        if(ninja.getTeam() == Game.Teams.PLAYER) {
                             for(Entity entity : ninja.getPlayer().getNearbyEntities(12,12,12)) {
                                 if(!(entity instanceof Player)) {
                                     continue;
                                 }
 
                                 Player p = (Player) entity;
-                                if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(p) != null) {
-                                    com.github.hirotask.ninjaoni.Ninja nin = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(p);
+                                if (this.plugin.getNinjaManager().getNinjaPlayer(p) != null) {
+                                    Ninja nin = this.plugin.getNinjaManager().getNinjaPlayer(p);
 
-                                    if(nin.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.ONI) {
+                                    if(nin.getTeam() == Game.Teams.ONI) {
                                         ninja.getPlayer().playSound(ninja.getPlayer().getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1, 0.5f);
                                     }
                                 }

@@ -1,25 +1,29 @@
 package com.github.hirotask.ninjaoni;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.entity.Player;
 
-public enum NinjaManager {
+public class NinjaManager {
 
-    INSTANCE;
+    private final NinjaOni ninjaOni;
 
-    public java.util.List<Ninja> ninjaPlayers;
+    public List<Ninja> ninjaPlayers;
 
-    public static com.github.hirotask.ninjaoni.NinjaManager getInstance() {
-        if(INSTANCE.ninjaPlayers == null) {
-            INSTANCE.ninjaPlayers = new java.util.ArrayList<>();
-        }
+    public NinjaManager(NinjaOni ninjaOni, List<Ninja> ninjaPlayers) {
+        this.ninjaOni = ninjaOni;
+        this.ninjaPlayers = ninjaPlayers;
+    }
 
-        return INSTANCE;
+    public NinjaManager(NinjaOni ninjaOni) {
+        this.ninjaOni = ninjaOni;
+        this.ninjaPlayers = new ArrayList<>();
     }
 
     public boolean containsNinja(Player player) {
         boolean result = false;
 
-        for (com.github.hirotask.ninjaoni.Ninja np : INSTANCE.ninjaPlayers) {
+        for (Ninja np : this.ninjaPlayers) {
             if (np.getPlayer().getUniqueId().toString().equals(player.getUniqueId().toString())) {
                 result = true;
             }
@@ -28,17 +32,17 @@ public enum NinjaManager {
         return result;
     }
 
-    public void addNinjaPlayer(com.github.hirotask.ninjaoni.Ninja ninja) {
+    public void addNinjaPlayer(Ninja ninja) {
         if (!containsNinja(ninja.getPlayer())) {
-            INSTANCE.ninjaPlayers.add(ninja);
+            this.ninjaPlayers.add(ninja);
         }
     }
 
-    public com.github.hirotask.ninjaoni.Ninja getNinjaPlayer(Player player) {
-        com.github.hirotask.ninjaoni.Ninja result = null;
+    public Ninja getNinjaPlayer(Player player) {
+        Ninja result = null;
 
         if (containsNinja(player)) {
-            for (com.github.hirotask.ninjaoni.Ninja np : INSTANCE.ninjaPlayers) {
+            for (Ninja np : this.ninjaPlayers) {
                 if (np.getPlayer().getUniqueId().toString().equals(player.getUniqueId().toString())) {
                     result = np;
                 }
@@ -49,20 +53,20 @@ public enum NinjaManager {
         return result;
     }
 
-    public void updateNinjaPlayer(com.github.hirotask.ninjaoni.Ninja ninja) {
+    public void updateNinjaPlayer(Ninja ninja) {
         if (!containsNinja(ninja.getPlayer())) {
             return;
         }
 
-        com.github.hirotask.ninjaoni.Ninja oldNinja = getNinjaPlayer(ninja.getPlayer());
+        Ninja oldNinja = getNinjaPlayer(ninja.getPlayer());
         oldNinja.setClimbing(ninja.isClimbing());
         oldNinja.setTeam(ninja.getTeam());
-        com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().addEntry(ninja.getPlayer(), ninja.getTeam());
+        this.ninjaOni.getGame().addEntry(ninja.getPlayer(), ninja.getTeam());
     }
 
-    public int countNinja(com.github.hirotask.ninjaoni.Game.Teams team) {
+    public int countNinja(Game.Teams team) {
         int result = 0;
-        for (com.github.hirotask.ninjaoni.Ninja ninja : INSTANCE.ninjaPlayers) {
+        for (Ninja ninja : this.ninjaPlayers) {
             if (ninja.getTeam() == team) {
                 result++;
             }

@@ -1,5 +1,6 @@
 package com.github.hirotask.ninjaoni.listener;
 
+import com.github.hirotask.ninjaoni.Ninja;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -22,9 +23,9 @@ import org.bukkit.util.Vector;
 
 public class NinjaMoveListener implements Listener {
 
-    private com.github.hirotask.ninjaoni.NinjaOni2 plugin;
+    private com.github.hirotask.ninjaoni.NinjaOni plugin;
 
-    public NinjaMoveListener(com.github.hirotask.ninjaoni.NinjaOni2 plugin) {
+    public NinjaMoveListener(com.github.hirotask.ninjaoni.NinjaOni plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
@@ -40,8 +41,8 @@ public class NinjaMoveListener implements Listener {
 
         e.setCancelled(true);
 
-        if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) {
-            com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+        if (this.plugin.getNinjaManager().containsNinja(player)) {
+            Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
             if (ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
                 if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
@@ -157,7 +158,7 @@ public class NinjaMoveListener implements Listener {
 
         Player player = e.getPlayer();
 
-        if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player) == null) {
+        if (this.plugin.getNinjaManager().getNinjaPlayer(player) == null) {
             System.out.println("Ninja is null");
             return;
         }
@@ -166,7 +167,7 @@ public class NinjaMoveListener implements Listener {
             return;
         }
 
-        com.github.hirotask.ninjaoni.Ninja np = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+        Ninja np = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
         //player is on ground
         if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR) {
@@ -240,7 +241,7 @@ public class NinjaMoveListener implements Listener {
 
         Player player = e.getPlayer();
 
-        if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player) == null) {
+        if (this.plugin.getNinjaManager().getNinjaPlayer(player) == null) {
             System.out.println("Ninja is null");
             return;
         }
@@ -248,8 +249,6 @@ public class NinjaMoveListener implements Listener {
         if (!player.isSneaking()) {
             return;
         }
-
-        com.github.hirotask.ninjaoni.Ninja np = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
 
         Block wxblock = player.getWorld().getBlockAt(player.getLocation().subtract(1.05, 0, 0));
         Block nxblock = player.getWorld().getBlockAt(player.getLocation().subtract(0, 0, 1.05));
@@ -295,7 +294,7 @@ public class NinjaMoveListener implements Listener {
 
         Player player = e.getPlayer();
 
-        if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player) == null) {
+        if (this.plugin.getNinjaManager().getNinjaPlayer(player) == null) {
             System.out.println("Ninja is null");
             return;
         }
@@ -312,15 +311,15 @@ public class NinjaMoveListener implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent e) {
-        if (com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
+        if (this.plugin.getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
             return;
         }
 
         Player player = e.getPlayer();
 
-        if(!com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) return;
+        if(!this.plugin.getNinjaManager().containsNinja(player)) return;
 
-        com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+        com.github.hirotask.ninjaoni.Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
         if(ninja.isLocked()) {
             return;
@@ -345,9 +344,9 @@ public class NinjaMoveListener implements Listener {
 
                 }else if(entity instanceof Player) {
                     Player locked = (Player) entity;
-                    if(!com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(locked)) return;
+                    if(!this.plugin.getNinjaManager().containsNinja(locked)) return;
 
-                    com.github.hirotask.ninjaoni.Ninja nin = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(locked);
+                    Ninja nin = this.plugin.getNinjaManager().getNinjaPlayer(locked);
 
                     if (nin.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
                         if (nin.isLocked()) {

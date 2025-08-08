@@ -46,8 +46,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.22")
     testCompileOnly("org.projectlombok:lombok:1.18.22")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
-    compileOnly("dev.jorel:commandapi-annotations:8.4.1")
-    annotationProcessor("dev.jorel:commandapi-annotations:8.4.1")
+    implementation("dev.jorel:commandapi-bukkit-plugin:10.1.2")
     compileOnly(group="com.comphenix.protocol", name="ProtocolLib", version="4.7.0")
 }
 
@@ -74,7 +73,7 @@ tasks.named("build") {
 }
 
 configure<BukkitPluginDescription> {
-    main = "com.github.hirotask.mc1171.NinjaOni2"
+    main = "com.github.hirotask.ninjaoni.NinjaOni"
     version = gitVersion()
     apiVersion = "1." + pluginVersion.split(".")[1]
     author = "hirotask"

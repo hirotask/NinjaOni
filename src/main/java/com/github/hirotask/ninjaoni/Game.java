@@ -1,8 +1,24 @@
 package com.github.hirotask.ninjaoni;
 
+import static com.github.hirotask.ninjaoni.Game.Teams.LOCKEDPLAYER;
+import static com.github.hirotask.ninjaoni.Game.Teams.ONI;
+import static com.github.hirotask.ninjaoni.Game.Teams.PLAYER;
+import static com.github.hirotask.ninjaoni.Game.Teams.SPECTATOR;
+import com.github.hirotask.ninjaoni.inventory.item.NinjaItem;
+import com.github.hirotask.ninjaoni.runnable.CountDownTask;
+import com.github.hirotask.ninjaoni.runnable.GameTask;
+import com.github.hirotask.ninjaoni.runnable.MovementTask;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -13,15 +29,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
-import java.util.List;
-
-import static com.github.hirotask.ninjaoni.Game.Teams.*;
-import static com.github.hirotask.ninjaoni.Game.Teams.SPECTATOR;
-
 /* ゲームにまつわる処理の根幹を担うクラス*/
 public class Game {
-
-
     /*
     フィールド
      */
@@ -30,7 +39,9 @@ public class Game {
     private GameState gameState;
 
     @Getter
-    private final List<Location> borderLocs = new java.util.ArrayList<>();
+    private final List<Location> borderLocs = new ArrayList<>();
+
+    private final NinjaOni ninjaOni;
 
     //スコアボード
     private ScoreboardManager sm;
@@ -40,12 +51,15 @@ public class Game {
     private static Team lockedpl;
     private static Team spectator;
 
+    public Game(NinjaOni ninjaOni) {
+        this.ninjaOni = ninjaOni;
+    }
+
     /**
      * ゲームのセットアップを行うメソッド
      */
     public void setup() {
-        this.gameState = com.github.hirotask.ninjaoni.Game.GameState.NONE;
-
+        this.gameState = Game.GameState.NONE;
 
         initTeams();
     }
@@ -136,14 +150,14 @@ public class Game {
         }
 
         //ゲーム状態変更
-        this.gameState = com.github.hirotask.ninjaoni.Game.GameState.NONE;
+        this.gameState = Game.GameState.NONE;
 
         //全員のゲームモード変更
         for(Player player : Bukkit.getServer().getOnlinePlayers()) {
             player.setGameMode(GameMode.ADVENTURE);
         }
 
-        for (com.github.hirotask.ninjaoni.Ninja np : com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers) {
+        for (Ninja np : ninjaOni.getNinjaManager().ninjaPlayers) {
             np.setHp(60);
             np.setMoney(0);
             np.setLocked(false);
@@ -152,7 +166,7 @@ public class Game {
         }
 
         //インベントリ初期化
-        for(com.github.hirotask.ninjaoni.Ninja ninja : com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers) {
+        for(Ninja ninja : ninjaOni.getNinjaManager().ninjaPlayers) {
             ninja.setMoney(0);
             ninja.getPlayer().getInventory().clear(); //インベントリ初期化
         }
@@ -164,10 +178,10 @@ public class Game {
      * @param gameTime
      */
     public void gameStart(int countdownTime, int gameTime) {
-        gameState = com.github.hirotask.ninjaoni.Game.GameState.COUNTDOWN;
+        gameState = Game.GameState.COUNTDOWN;
 
         //チームの設定
-        for (com.github.hirotask.ninjaoni.Ninja ninja : com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers) {
+        for (Ninja ninja : ninjaOni.getNinjaManager().ninjaPlayers) {
             if (ninja.getTeam() == SPECTATOR) {
                 //観戦者チームにいた場合
                 addEntry(ninja.getPlayer(), SPECTATOR);
@@ -176,30 +190,30 @@ public class Game {
                 //鬼チームにいた場合
                 Player player = ninja.getPlayer();
                 addEntry(ninja.getPlayer(), ONI);
-                Location loc = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getTPLocationOni().clone();
+                Location loc = ninjaOni.getMyConfig().getTPLocationOni().clone();
                 loc.setWorld(player.getWorld());
                 player.teleport(loc);
             } else {
                 //プレイヤーの場合
-                ninja.setTeam(com.github.hirotask.ninjaoni.Game.Teams.PLAYER);
+                ninja.setTeam(Game.Teams.PLAYER);
                 Player player = ninja.getPlayer();
                 addEntry(ninja.getPlayer(), PLAYER);
-                Location loc = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getTPLocationPlayer().clone();
+                Location loc = ninjaOni.getMyConfig().getTPLocationPlayer().clone();
                 loc.setWorld(player.getWorld());
                 player.teleport(loc);
             }
         }
 
         //インベントリの設定
-        for(com.github.hirotask.ninjaoni.Ninja ninja : com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers) {
+        for(Ninja ninja : ninjaOni.getNinjaManager().ninjaPlayers) {
             ninja.setMoney(0);
             ninja.getPlayer().getInventory().clear(); //インベントリ初期化
 
             PlayerInventory inv = ninja.getPlayer().getInventory();
 
             int slot = 20;
-            for(com.github.hirotask.ninjaoni.inventory.item.NinjaItem ninjaItem : ninja.getItems()) {
-                ItemStack item = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(ninjaItem);
+            for(NinjaItem ninjaItem : ninja.getItems()) {
+                ItemStack item = ninjaOni.getItemManager().getItem(ninjaItem);
                 item.setAmount(64);
                 inv.setItem(slot, item);
                 slot++;
@@ -218,7 +232,7 @@ public class Game {
         }
 
         //お金の消去
-        World world = com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers.get(0).getPlayer().getWorld();
+        World world = ninjaOni.getNinjaManager().ninjaPlayers.get(0).getPlayer().getWorld();
         for(Entity entity : world.getEntities()) {
             if(entity instanceof ArmorStand stand) {
                 if(stand.getCustomName() != null) {
@@ -245,9 +259,9 @@ public class Game {
         }
 
         //Taskの実行
-        new com.github.hirotask.ninjaoni.runnable.CountDownTask(countdownTime).runTaskTimer(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getPlugin(), 0L, 20L);
-        new com.github.hirotask.ninjaoni.runnable.GameTask(gameTime).runTaskTimer(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getPlugin(), 0L, 20L);
-        new com.github.hirotask.ninjaoni.runnable.MovementTask().runTaskTimer(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getPlugin(), 0L, 20L);
+        new CountDownTask(ninjaOni, countdownTime).runTaskTimer(ninjaOni, 0L, 20L);
+        new GameTask(ninjaOni, gameTime).runTaskTimer(ninjaOni, 0L, 20L);
+        new MovementTask(ninjaOni).runTaskTimer(ninjaOni, 0L, 20L);
     }
 
 

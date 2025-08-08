@@ -1,5 +1,8 @@
 package com.github.hirotask.ninjaoni.listener;
 
+import com.github.hirotask.ninjaoni.Ninja;
+import com.github.hirotask.ninjaoni.NinjaOni;
+import com.github.hirotask.ninjaoni.inventory.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,8 +16,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class ShopListener implements Listener {
 
-    public ShopListener(com.github.hirotask.ninjaoni.NinjaOni2 plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this,plugin);
+    private final NinjaOni plugin;
+
+    public ShopListener(NinjaOni plugin) {
+        this.plugin = plugin;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
@@ -25,7 +31,7 @@ public class ShopListener implements Listener {
 
         Villager villager = (Villager) e.getRightClicked();
         Player player = e.getPlayer();
-        com.github.hirotask.ninjaoni.inventory.ItemManager im = new com.github.hirotask.ninjaoni.inventory.ItemManager();
+        com.github.hirotask.ninjaoni.inventory.ItemManager im = new com.github.hirotask.ninjaoni.inventory.ItemManager(this.plugin);
         if(villager.getCustomName() != null) {
             String customName = ChatColor.stripColor(villager.getCustomName());
             if(customName.equals("鬼専用ショップ")) {
@@ -89,7 +95,7 @@ public class ShopListener implements Listener {
 
         Player player = (Player) e.getWhoClicked();
         com.github.hirotask.ninjaoni.Ninja ninja = null;
-        com.github.hirotask.ninjaoni.inventory.ItemManager im = new com.github.hirotask.ninjaoni.inventory.ItemManager();
+        com.github.hirotask.ninjaoni.inventory.ItemManager im = new ItemManager(this.plugin);
 
         if(clickedItem == null) {
             return;
@@ -100,7 +106,7 @@ public class ShopListener implements Listener {
 
         String itemName = clickedItem.getItemMeta().getDisplayName();
 
-        for(com.github.hirotask.ninjaoni.Ninja ninja1 : com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers) {
+        for(Ninja ninja1 : this.plugin.getNinjaManager().ninjaPlayers) {
             if(ninja1.getPlayer().getUniqueId().toString().equals(player.getUniqueId().toString())) {
                 ninja = ninja1;
                 break;
@@ -124,7 +130,7 @@ public class ShopListener implements Listener {
                 }
             }
 
-            com.github.hirotask.ninjaoni.NinjaManager.getInstance().updateNinjaPlayer(ninja);
+            this.plugin.getNinjaManager().updateNinjaPlayer(ninja);
             e.setCancelled(true);
         }
     }

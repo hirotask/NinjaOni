@@ -1,5 +1,7 @@
 package com.github.hirotask.ninjaoni.runnable;
 
+import com.github.hirotask.ninjaoni.Game;
+import com.github.hirotask.ninjaoni.NinjaOni;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -8,29 +10,29 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class CountDownTask extends BukkitRunnable {
     private int count;
-    private com.github.hirotask.ninjaoni.NinjaOni2 plugin;
+    private NinjaOni plugin;
     private final String symbol_left = "&e>";
     private final String symbol_right = "&e<";
 
-    public CountDownTask(int count) {
-        this.plugin = com.github.hirotask.ninjaoni.NinjaOniAPI.INSTANCE.getPlugin();
+    public CountDownTask(NinjaOni ninjaOni, int count) {
+        this.plugin = ninjaOni;
 
         if(count > 0) {
             this.count = count;
         } else {
-            this.count = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getCountdownTime();
+            this.count = this.plugin.getMyConfig().getCountdownTime();
         }
     }
 
     @Override
     public void run() {
-        if(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.COUNTDOWN) {
+        if(this.plugin.getGame().getGameState() == Game.GameState.COUNTDOWN) {
             if(count < 0) {
                 this.cancel();
             }
 
             if (count == 0) {
-                com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().setGameState(com.github.hirotask.ninjaoni.Game.GameState.INGAME);
+                this.plugin.getGame().setGameState(Game.GameState.INGAME);
                 for(Player player : Bukkit.getServer().getOnlinePlayers()) {
                     player.sendTitle("GAME START!", null, 10, 70, 2);
                 }

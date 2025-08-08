@@ -1,5 +1,6 @@
 package com.github.hirotask.ninjaoni.inventory.item.items;
 
+import com.github.hirotask.ninjaoni.NinjaOni;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -9,6 +10,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Shukuchi implements com.github.hirotask.ninjaoni.inventory.item.NinjaItem {
+
+    private final NinjaOni plugin;
+
+    public Shukuchi(NinjaOni plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Material type() {
@@ -48,7 +55,7 @@ public class Shukuchi implements com.github.hirotask.ninjaoni.inventory.item.Nin
                 count--;
 
             }
-        }.runTaskTimer(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getPlugin(), 0L, 20L);
+        }.runTaskTimer(this.plugin, 0L, 20L);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.github.hirotask.ninjaoni.listener;
 
+import com.github.hirotask.ninjaoni.Ninja;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -23,17 +24,17 @@ import org.bukkit.potion.PotionEffectType;
 //アイテム処理に関するリスナー
 public class NinjaItemListener implements Listener {
 
-    private com.github.hirotask.ninjaoni.NinjaOni2 plugin;
+    private com.github.hirotask.ninjaoni.NinjaOni plugin;
 
 
-    public NinjaItemListener(com.github.hirotask.ninjaoni.NinjaOni2 plugin) {
+    public NinjaItemListener(com.github.hirotask.ninjaoni.NinjaOni plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
     public void onInteractArmorStand(PlayerArmorStandManipulateEvent e) {
-        if (com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
+        if (this.plugin.getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
             e.setCancelled(true);
 
         }
@@ -46,12 +47,12 @@ public class NinjaItemListener implements Listener {
         PlayerInventory inv = player.getInventory();
         ItemStack item = inv.getItemInMainHand();
         com.github.hirotask.ninjaoni.inventory.NinjaInventory ninjaInventory = new com.github.hirotask.ninjaoni.inventory.NinjaInventory(inv);
-        com.github.hirotask.ninjaoni.inventory.ItemManager itemManager = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager();
+        com.github.hirotask.ninjaoni.inventory.ItemManager itemManager = this.plugin.getItemManager();
 
         if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-            if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) {
+            if (this.plugin.getNinjaManager().containsNinja(player)) {
 
-                com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+                com.github.hirotask.ninjaoni.Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
                 for (com.github.hirotask.ninjaoni.inventory.item.NinjaItem ninjaItem : itemManager.getNinjaItems()) {
                     if (ninjaItem.ninjaItemType() == com.github.hirotask.ninjaoni.inventory.item.NinjaItem.NinjaItemType.ONI_ITEM && ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.ONI) {
@@ -92,7 +93,7 @@ public class NinjaItemListener implements Listener {
             return;
         }
 
-        if (com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.NONE) {
+        if (this.plugin.getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.NONE) {
             return;
         }
 
@@ -102,7 +103,7 @@ public class NinjaItemListener implements Listener {
         Player player = (Player) e.getWhoClicked();
         PlayerInventory inv = (PlayerInventory) e.getClickedInventory();
         com.github.hirotask.ninjaoni.inventory.NinjaInventory ninjaInventory = new com.github.hirotask.ninjaoni.inventory.NinjaInventory(inv);
-        com.github.hirotask.ninjaoni.inventory.ItemManager itemManager = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager();
+        com.github.hirotask.ninjaoni.inventory.ItemManager itemManager = this.plugin.getItemManager();
 
 
         if (e.getCurrentItem().getType() == com.github.hirotask.ninjaoni.inventory.ItemManager.getMoney().getType() && e.getSlot() == 18) {
@@ -110,8 +111,8 @@ public class NinjaItemListener implements Listener {
             return;
         }
 
-        if (com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) {
-            com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+        if (this.plugin.getNinjaManager().containsNinja(player)) {
+            Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
             for (com.github.hirotask.ninjaoni.inventory.item.NinjaItem ninjaItem : itemManager.getNinjaItems()) {
                 if (ninjaItem.ninjaItemType() == com.github.hirotask.ninjaoni.inventory.item.NinjaItem.NinjaItemType.ONI_ITEM && ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.ONI) {
@@ -149,7 +150,7 @@ public class NinjaItemListener implements Listener {
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent e) {
-        if (com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
+        if (this.plugin.getGame().getGameState() != com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
             return;
         }
 
@@ -170,12 +171,12 @@ public class NinjaItemListener implements Listener {
                     return;
                 }
 
-                if(!com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) {
+                if(!this.plugin.getNinjaManager().containsNinja(player)) {
                     return;
                 }
 
                 Player shooter = (Player) arrow.getShooter();
-                com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+                com.github.hirotask.ninjaoni.Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
                 if(ninja.getTeam() != com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
                     return;
@@ -207,12 +208,12 @@ public class NinjaItemListener implements Listener {
                     return;
                 }
 
-                if(!com.github.hirotask.ninjaoni.NinjaManager.getInstance().containsNinja(player)) {
+                if(!this.plugin.getNinjaManager().containsNinja(player)) {
                     return;
                 }
 
                 Player shooter = (Player) snowball.getShooter();
-                com.github.hirotask.ninjaoni.Ninja ninja = com.github.hirotask.ninjaoni.NinjaManager.getInstance().getNinjaPlayer(player);
+                com.github.hirotask.ninjaoni.Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
                 if(ninja.getTeam() != com.github.hirotask.ninjaoni.Game.Teams.ONI) {
                     return;

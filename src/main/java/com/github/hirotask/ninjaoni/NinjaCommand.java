@@ -1,10 +1,18 @@
 package com.github.hirotask.ninjaoni;
 
-import dev.jorel.commandapi.annotations.Command;
-import dev.jorel.commandapi.annotations.Default;
-import dev.jorel.commandapi.annotations.Subcommand;
-import dev.jorel.commandapi.annotations.arguments.AIntegerArgument;
-import dev.jorel.commandapi.annotations.arguments.AMultiLiteralArgument;
+import com.github.hirotask.ninjaoni.inventory.item.NinjaItem;
+import com.github.hirotask.ninjaoni.inventory.item.items.Kageoi;
+import com.github.hirotask.ninjaoni.inventory.item.items.Kakure;
+import com.github.hirotask.ninjaoni.inventory.item.items.Kemuri;
+import com.github.hirotask.ninjaoni.inventory.item.items.Kunai;
+import com.github.hirotask.ninjaoni.inventory.item.items.Nenchaku;
+import com.github.hirotask.ninjaoni.inventory.item.items.Shukuchi;
+import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.arguments.IntegerArgument;
+import dev.jorel.commandapi.arguments.LiteralArgument;
+import dev.jorel.commandapi.arguments.MultiLiteralArgument;
+import dev.jorel.commandapi.executors.CommandArguments;
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,8 +25,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 
-@Command("ninja")
 public class NinjaCommand {
+
+    private final NinjaOni ninjaOni;
+
+    public NinjaCommand(NinjaOni ninjaOni) {
+        this.ninjaOni = ninjaOni;
+    }
 
     private static final String[] helpMsgs = {
             "===================",
@@ -26,67 +39,69 @@ public class NinjaCommand {
             "==================="
     };
 
-    @Default
-    public static void ninja(CommandSender sender) {
+    /**
+     * 取得できるアイテム一覧
+     */
+    private String[] getCanGetItems() {
+        return ninjaOni.getItemManager().getNinjaItems().stream().map(NinjaItem::name).toArray(String[]::new);
+    }
+
+    private void sendHelpMessage(CommandSender sender, CommandArguments ignoredArgs) {
         for (String msg : helpMsgs) {
             sender.sendMessage(msg);
         }
     }
 
-    @Subcommand("start")
-    public static void start(
-            Player player,
-            @AIntegerArgument int gameTime) {
+    private void start(CommandSender sender, CommandArguments args) {
+        Player player = (Player) sender;
+        int gameTime = args.get(0) != null ? (int) args.get(0) : -1;
+        int countDownTime = 5;
 
-        com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().gameStart(5, gameTime);
+        if (gameTime > 0) {
+            ninjaOni.getGame().gameStart(countDownTime, gameTime);
+        } else {
+            player.sendMessage("実行中にエラーが発生しました");
+        }
     }
 
-    @Subcommand("getitem")
-    public static void getItem(
-            Player player,
-            @AMultiLiteralArgument({
-                    "クナイ",
-                    "隠れ玉",
-                    "煙玉",
-                    "影追玉",
-                    "粘着玉",
-                    "縮地"
-            }) String name) {
+    private void getItem(CommandSender sender, CommandArguments args) {
+        Player player = (Player) sender;
+        String itemName = (String) args.get(0);
 
-        switch (name) {
+        switch (Objects.requireNonNull(itemName)) {
             case "クナイ" -> {
                 player.sendMessage("クナイをインベントリに追加しました");
-                player.getInventory().addItem(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(new com.github.hirotask.ninjaoni.inventory.item.items.Kunai()));
+                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kunai()));
             }
             case "隠れ玉" -> {
                 player.sendMessage("隠れ玉をインベントリに追加しました");
-                player.getInventory().addItem(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(new com.github.hirotask.ninjaoni.inventory.item.items.Kakure()));
+                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kakure()));
             }
             case "煙玉" -> {
                 player.sendMessage("煙玉をインベントリに追加しました");
-                player.getInventory().addItem(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(new com.github.hirotask.ninjaoni.inventory.item.items.Kemuri()));
+                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kemuri(this.ninjaOni)));
             }
             case "影追玉" -> {
                 player.sendMessage("影追玉をインベントリに追加しました");
-                player.getInventory().addItem(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(new com.github.hirotask.ninjaoni.inventory.item.items.Kageoi()));
+                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kageoi(this.ninjaOni)));
             }
             case "粘着玉" -> {
                 player.sendMessage("粘着玉をインベントリに追加しました");
-                player.getInventory().addItem(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(new com.github.hirotask.ninjaoni.inventory.item.items.Nenchaku()));
+                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Nenchaku()));
             }
             case "縮地" -> {
                 player.sendMessage("縮地をインベントリに追加しました");
-                player.getInventory().addItem(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getItemManager().getItem(new com.github.hirotask.ninjaoni.inventory.item.items.Shukuchi()));
+                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Shukuchi(this.ninjaOni)));
             }
         }
     }
 
-    @Subcommand("removemoney")
-    public static void removeMoney(Player player) {
-        World world = com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers.get(0).getPlayer().getWorld();
+    private void removeMoney(CommandSender sender, CommandArguments ignoredArgs) {
+        Player player = (Player) sender;
+        World world = player.getWorld();
+
         for(Entity entity : world.getEntities()) {
-            if(entity instanceof ArmorStand) {
-                ArmorStand stand = (ArmorStand) entity;
+            if(entity instanceof ArmorStand stand) {
                 if(stand.getCustomName() != null) {
                     if(stand.getCustomName().equals("money")) {
                         stand.remove();
@@ -94,12 +109,14 @@ public class NinjaCommand {
                 }
             }
         }
+
         player.sendMessage("お金をすべて削除しました");
     }
 
-    @Subcommand("spawnshop")
-    public static void spawnShop(Player player,
-                                 @AMultiLiteralArgument({"鬼", "プレイヤー"}) String type) {
+    private void spawnShop(CommandSender sender, CommandArguments args) {
+        Player player = (Player) sender;
+        String type = (String) args.get(0);
+
         Location loc = player.getLocation();
 
         Villager villager = (Villager) player.getWorld().spawnEntity(loc, EntityType.VILLAGER);
@@ -112,24 +129,54 @@ public class NinjaCommand {
         villager.setInvulnerable(true);
         villager.setRotation(player.getLocation().getYaw(), player.getLocation().getPitch());
 
-        if(type.equalsIgnoreCase("鬼")) {
-            villager.setCustomName(ChatColor.GREEN + "鬼専用ショップ");
-        } else if (type.equalsIgnoreCase("プレイヤー")){
-            villager.setCustomName(ChatColor.GREEN + "プレイヤー専用ショップ");
+        if (type != null) {
+            if(type.equalsIgnoreCase("oni")) {
+                villager.setCustomName(ChatColor.GREEN + "鬼専用ショップ");
+            } else if (type.equalsIgnoreCase("player")){
+                villager.setCustomName(ChatColor.GREEN + "プレイヤー専用ショップ");
+            }
         }
     }
 
-    @Subcommand("warp")
-    public static void warp(Player player) {
+    private void warp(CommandSender sender, CommandArguments args) {
+
         for(Player p : Bukkit.getServer().getOnlinePlayers()) {
             Bukkit.getServer().getLogger().info(p.getName());
-            if(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getWarpBlockTypeOni()) {
-                com.github.hirotask.ninjaoni.NinjaManager.getInstance().updateNinjaPlayer(new com.github.hirotask.ninjaoni.Ninja(p, com.github.hirotask.ninjaoni.Game.Teams.ONI));
+            if(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == ninjaOni.getMyConfig().getWarpBlockTypeOni()) {
+                ninjaOni.getNinjaManager().updateNinjaPlayer(new Ninja(this.ninjaOni, p, Game.Teams.ONI));
                 p.sendMessage("あなたは鬼になりました");
-            } else if(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getMyConfig().getWarpBlockTypeSpec()) {
-                com.github.hirotask.ninjaoni.NinjaManager.getInstance().updateNinjaPlayer(new com.github.hirotask.ninjaoni.Ninja(p, com.github.hirotask.ninjaoni.Game.Teams.SPECTATOR));
+            } else if(p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == ninjaOni.getMyConfig().getWarpBlockTypeSpec()) {
+                ninjaOni.getNinjaManager().updateNinjaPlayer(new Ninja(this.ninjaOni, p, Game.Teams.SPECTATOR));
                 p.sendMessage("あなたは観戦者になりました");
             }
         }
     }
+
+    public void registerAllCommands() {
+        new CommandTree("ninja")
+                .executes(this::sendHelpMessage)
+                .then(new LiteralArgument("start")
+                        .then(new IntegerArgument("gameTime")
+                                .executes(this::start)
+                        )
+                )
+                .then(new LiteralArgument("getItem")
+                        .then(new MultiLiteralArgument("name", this.getCanGetItems())
+                                .executes(this::getItem)
+                        )
+                )
+                .then(new LiteralArgument("removemoney")
+                        .executes(this::removeMoney)
+                )
+                .then(new LiteralArgument("spawnshop")
+                        .then(new MultiLiteralArgument("type", "oni", "player")
+                                .executes(this::spawnShop)
+                        )
+                )
+                .then(new LiteralArgument("warp")
+                        .executes(this::warp)
+                )
+                .register();
+    }
+
 }

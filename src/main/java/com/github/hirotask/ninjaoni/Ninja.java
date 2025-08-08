@@ -6,16 +6,19 @@ import org.bukkit.entity.Player;
 @Data
 public class Ninja {
 
+    private NinjaOni ninjaOni;
+
     private Player player;
     private boolean isClimbing; //壁を上っているか
-    private com.github.hirotask.ninjaoni.Game.Teams team; //所属チーム
+    private Game.Teams team; //所属チーム
     private boolean isLocked; //捕まっているか
     private int hp;
     private int money;
 
     private java.util.List<com.github.hirotask.ninjaoni.inventory.item.NinjaItem> items;
 
-    public Ninja(Player player, boolean isClimbing, boolean isLocked, int hp, com.github.hirotask.ninjaoni.Game.Teams team, int money) {
+    public Ninja(NinjaOni ninjaOni, Player player, boolean isClimbing, boolean isLocked, int hp, com.github.hirotask.ninjaoni.Game.Teams team, int money) {
+        this.ninjaOni = ninjaOni;
         this.player = player;
         this.isClimbing = isClimbing;
         this.isLocked = isLocked;
@@ -25,8 +28,8 @@ public class Ninja {
         this.items = new java.util.ArrayList<>();
     }
 
-    public Ninja(Player player, com.github.hirotask.ninjaoni.Game.Teams team) {
-        this(player,false,false, 60, team, 0);
+    public Ninja(NinjaOni ninjaOni, Player player, Game.Teams team) {
+        this(ninjaOni, player,false,false, 60, team, 0);
     }
 
     public void decHP() {
@@ -45,9 +48,9 @@ public class Ninja {
         this.isLocked = b;
 
         if(b) {
-            com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().addEntry(this.player, com.github.hirotask.ninjaoni.Game.Teams.LOCKEDPLAYER);
+            this.ninjaOni.getGame().addEntry(this.player, com.github.hirotask.ninjaoni.Game.Teams.LOCKEDPLAYER);
         }else {
-            com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getGame().addEntry(this.player, com.github.hirotask.ninjaoni.Game.Teams.PLAYER);
+            this.ninjaOni.getGame().addEntry(this.player, com.github.hirotask.ninjaoni.Game.Teams.PLAYER);
         }
     }
 

@@ -3,12 +3,20 @@ package com.github.hirotask.ninjaoni.inventory.item.items;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.github.hirotask.ninjaoni.Ninja;
+import com.github.hirotask.ninjaoni.NinjaOni;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Kageoi implements com.github.hirotask.ninjaoni.inventory.item.NinjaItem {
+
+    private final NinjaOni plugin;
+
+    public Kageoi(NinjaOni plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Material type() {
@@ -32,7 +40,7 @@ public class Kageoi implements com.github.hirotask.ninjaoni.inventory.item.Ninja
         java.util.List<Player> glowPlayers = new java.util.ArrayList<>();
 
         //光らせるプレイヤーの設定
-        for (com.github.hirotask.ninjaoni.Ninja nin : com.github.hirotask.ninjaoni.NinjaManager.getInstance().ninjaPlayers) {
+        for (Ninja nin : this.plugin.getNinjaManager().ninjaPlayers) {
             if (nin.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
                 if(!glowPlayers.contains(nin.getPlayer())) {
                     glowPlayers.add(nin.getPlayer());
@@ -51,7 +59,7 @@ public class Kageoi implements com.github.hirotask.ninjaoni.inventory.item.Ninja
                 } else {
                     for (Player p : glowPlayers) {
 
-                        PacketContainer glowPacket = com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getProtocol().createPacket(PacketType.Play.Server.ENTITY_METADATA);
+                        PacketContainer glowPacket = plugin.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
                         glowPacket.getIntegers().write(0, p.getEntityId()); //光らせるプレイヤーのID
                         WrappedDataWatcher watcher = new WrappedDataWatcher(); //Create data watcher, the Entity Metadata packet requires this
                         WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.get(Byte.class); //Found this through google, needed for some stupid reason
@@ -62,7 +70,7 @@ public class Kageoi implements com.github.hirotask.ninjaoni.inventory.item.Ninja
                         glowPacket.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects()); //Make the packet's datawatcher the one we created
 
                         try {
-                            com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getProtocol().sendServerPacket(player, glowPacket);
+                            plugin.getProtocolManager().sendServerPacket(player, glowPacket);
                         } catch (java.lang.reflect.InvocationTargetException ex) {
                             ex.printStackTrace();
                         }
@@ -72,7 +80,7 @@ public class Kageoi implements com.github.hirotask.ninjaoni.inventory.item.Ninja
                 count--;
             }
 
-        }.runTaskTimer(com.github.hirotask.ninjaoni.NinjaOniAPI.getInstance().getPlugin(), 0L, 20L);
+        }.runTaskTimer(this.plugin, 0L, 20L);
     }
 
     @Override
