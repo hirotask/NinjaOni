@@ -2,6 +2,7 @@ package com.github.hirotask.ninjaoni.listener;
 
 import com.github.hirotask.ninjaoni.Ninja;
 import com.github.hirotask.ninjaoni.NinjaOni;
+import com.github.hirotask.ninjaoni.event.ShopOpenEvent;
 import com.github.hirotask.ninjaoni.inventory.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,6 +15,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * ショップ操作に関するリスナー
+ */
 public class ShopListener implements Listener {
 
     private final NinjaOni plugin;
@@ -31,10 +35,12 @@ public class ShopListener implements Listener {
 
         Villager villager = (Villager) e.getRightClicked();
         Player player = e.getPlayer();
-        com.github.hirotask.ninjaoni.inventory.ItemManager im = new com.github.hirotask.ninjaoni.inventory.ItemManager(this.plugin);
+        ItemManager im = new com.github.hirotask.ninjaoni.inventory.ItemManager(this.plugin);
         if(villager.getCustomName() != null) {
             String customName = ChatColor.stripColor(villager.getCustomName());
-            if(customName.equals("鬼専用ショップ")) {
+            if(customName.equals("鬼専用ショップ") || customName.equals("プレイヤー専用ショップ")) {
+                plugin.getServer().getPluginManager().callEvent(new ShopOpenEvent(player, customName));
+
                 Inventory inv = Bukkit.createInventory(null, 9, customName);
 
                 java.util.List<ItemStack> items = new java.util.ArrayList<>();

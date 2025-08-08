@@ -3,7 +3,6 @@ package com.github.hirotask.ninjaoni;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.github.hirotask.ninjaoni.inventory.ItemManager;
-import com.github.hirotask.ninjaoni.listener.JoinQuitListener;
 import com.github.hirotask.ninjaoni.listener.NinjaItemListener;
 import com.github.hirotask.ninjaoni.listener.NinjaMoveListener;
 import com.github.hirotask.ninjaoni.listener.NinjaOniListener;
@@ -36,7 +35,6 @@ public final class NinjaOni extends JavaPlugin {
         this.myConfig = new Config(this);
 
         //リスナーの設定
-        new JoinQuitListener(this);
         new NinjaMoveListener(this);
         new NinjaOniListener(this);
         new NinjaItemListener(this);

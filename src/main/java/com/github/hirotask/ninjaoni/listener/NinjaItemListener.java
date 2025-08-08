@@ -1,6 +1,11 @@
 package com.github.hirotask.ninjaoni.listener;
 
+import com.github.hirotask.ninjaoni.Game;
 import com.github.hirotask.ninjaoni.Ninja;
+import com.github.hirotask.ninjaoni.NinjaOni;
+import com.github.hirotask.ninjaoni.inventory.ItemManager;
+import com.github.hirotask.ninjaoni.inventory.NinjaInventory;
+import com.github.hirotask.ninjaoni.inventory.item.NinjaItem;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -12,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,20 +28,11 @@ import org.bukkit.potion.PotionEffectType;
 //アイテム処理に関するリスナー
 public class NinjaItemListener implements Listener {
 
-    private com.github.hirotask.ninjaoni.NinjaOni plugin;
-
+    private NinjaOni plugin;
 
     public NinjaItemListener(com.github.hirotask.ninjaoni.NinjaOni plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
-
-    @EventHandler
-    public void onInteractArmorStand(PlayerArmorStandManipulateEvent e) {
-        if (this.plugin.getGame().getGameState() == com.github.hirotask.ninjaoni.Game.GameState.INGAME) {
-            e.setCancelled(true);
-
-        }
     }
 
     @EventHandler
@@ -46,16 +41,15 @@ public class NinjaItemListener implements Listener {
 
         PlayerInventory inv = player.getInventory();
         ItemStack item = inv.getItemInMainHand();
-        com.github.hirotask.ninjaoni.inventory.NinjaInventory ninjaInventory = new com.github.hirotask.ninjaoni.inventory.NinjaInventory(inv);
-        com.github.hirotask.ninjaoni.inventory.ItemManager itemManager = this.plugin.getItemManager();
+        NinjaInventory ninjaInventory = new NinjaInventory(inv);
+        ItemManager itemManager = this.plugin.getItemManager();
 
         if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (this.plugin.getNinjaManager().containsNinja(player)) {
+                Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
-                com.github.hirotask.ninjaoni.Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
-
-                for (com.github.hirotask.ninjaoni.inventory.item.NinjaItem ninjaItem : itemManager.getNinjaItems()) {
-                    if (ninjaItem.ninjaItemType() == com.github.hirotask.ninjaoni.inventory.item.NinjaItem.NinjaItemType.ONI_ITEM && ninja.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.ONI) {
+                for (NinjaItem ninjaItem : itemManager.getNinjaItems()) {
+                    if (ninjaItem.ninjaItemType() == NinjaItem.NinjaItemType.ONI_ITEM && ninja.getTeam() == Game.Teams.ONI) {
                         if (item.getType() == ninjaItem.type()) {
                             ninjaInventory.decrementHolderItem(itemManager.getItem(ninjaItem));
 
