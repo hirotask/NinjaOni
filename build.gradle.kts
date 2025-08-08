@@ -1,3 +1,5 @@
+
+import dev.s7a.gradle.minecraft.server.tasks.LaunchMinecraftServerTask
 import groovy.lang.Closure
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
@@ -7,18 +9,14 @@ plugins {
     id("org.jetbrains.dokka") version "1.8.20"
     id("org.jmailen.kotlinter") version "3.8.0"
     id("com.palantir.git-version") version "0.15.0"
-    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    id("dev.s7a.gradle.minecraft.server") version "3.2.1"
 }
 
 val gitVersion: Closure<String> by extra
 
-group = "com.github.hirotask.mc1171"
-version = gitVersion()
+group = "com.github.hirotask.ninjaoni"
 base.archivesName.set("NinjaOni")
-
-val shadowImplementation: Configuration by configurations.creating
-configurations["implementation"].extendsFrom(shadowImplementation)
 
 val pluginVersion: String by project.ext
 
@@ -46,7 +44,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.22")
     testCompileOnly("org.projectlombok:lombok:1.18.22")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
-    implementation("dev.jorel:commandapi-bukkit-plugin:10.1.2")
+    compileOnly("dev.jorel:commandapi-bukkit-plugin:9.4.0")
     compileOnly(group="com.comphenix.protocol", name="ProtocolLib", version="4.7.0")
 }
 
@@ -63,18 +61,32 @@ java {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
         options.release.set(targetJavaVersion)
     }
-}
-
-tasks.named("build") {
-    dependsOn("shadowJar")
 }
 
 configure<BukkitPluginDescription> {
     main = "com.github.hirotask.ninjaoni.NinjaOni"
     version = gitVersion()
     apiVersion = "1." + pluginVersion.split(".")[1]
+    depend = listOf("ProtocolLib", "CommandAPI")
     author = "hirotask"
+}
+
+task<LaunchMinecraftServerTask>("buildAndLaunchServer") {
+    dependsOn("build")
+    doFirst {
+        copy {
+            from(buildDir.resolve("libs/${project.name}.jar"))
+            into(buildDir.resolve("MinecraftServer/plugins"))
+        }
+        copy {
+            from(projectDir.resolve("libs"))
+            into(buildDir.resolve("MinecraftServer/plugins"))
+        }
+    }
+
+    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper(pluginVersion))
+    agreeEula.set(true)
 }

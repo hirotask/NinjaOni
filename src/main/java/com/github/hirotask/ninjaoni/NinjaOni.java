@@ -30,9 +30,6 @@ public final class NinjaOni extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        //コマンドの設定
-        new NinjaCommand(this).registerAllCommands();
-
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.ninjaManager = new NinjaManager(this);
         this.itemManager = new ItemManager(this);
@@ -48,6 +45,9 @@ public final class NinjaOni extends JavaPlugin {
         // Runnable の設定
         this.game = new Game(this);
         this.game.setup();
+
+        //コマンドの設定
+        new NinjaCommand(this).registerAllCommands();
     }
 
     @Override
