@@ -12,7 +12,6 @@ import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
-import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -68,7 +67,11 @@ public class NinjaCommand {
         Player player = (Player) sender;
         String itemName = (String) args.get(0);
 
-        switch (Objects.requireNonNull(itemName)) {
+        System.out.print(itemName);
+
+        if (itemName == null) return;
+
+        switch (itemName) {
             case "クナイ" -> {
                 player.sendMessage("クナイをインベントリに追加しました");
                 player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kunai()));

@@ -4,8 +4,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.github.hirotask.ninjaoni.inventory.ItemManager;
 import com.github.hirotask.ninjaoni.listener.BukkitEventListener;
+import com.github.hirotask.ninjaoni.listener.NinjaItemListener;
 import com.github.hirotask.ninjaoni.listener.NinjaMoveListener;
-import com.github.hirotask.ninjaoni.listener.NinjaOniListener;
 import com.github.hirotask.ninjaoni.utils.Config;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -36,7 +36,7 @@ public final class NinjaOni extends JavaPlugin {
         //リスナーの設定
         new BukkitEventListener(this);
         new NinjaMoveListener(this);
-        new NinjaOniListener(this);
+        new NinjaItemListener(this);
 
         // Runnable の設定
         this.game = new Game(this);

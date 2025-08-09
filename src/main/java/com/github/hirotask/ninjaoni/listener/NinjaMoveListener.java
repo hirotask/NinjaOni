@@ -1,5 +1,6 @@
 package com.github.hirotask.ninjaoni.listener;
 
+import com.github.hirotask.ninjaoni.Game;
 import com.github.hirotask.ninjaoni.Ninja;
 import com.github.hirotask.ninjaoni.runnable.GetMoneyTask;
 import com.github.hirotask.ninjaoni.runnable.PlayerOpenTask;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -24,6 +26,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+/**
+ * 忍者の特有の動きに関するリスナー
+ */
 public class NinjaMoveListener implements Listener {
 
     private com.github.hirotask.ninjaoni.NinjaOni plugin;
@@ -31,6 +36,29 @@ public class NinjaMoveListener implements Listener {
     public NinjaMoveListener(com.github.hirotask.ninjaoni.NinjaOni plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    /**
+     * 忍者を確保
+     */
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent e) {
+        if (this.plugin.getGame().getGameState() != Game.GameState.INGAME) {
+            return;
+        }
+
+        if (e.getDamager() instanceof Player damager && e.getEntity() instanceof Player player) { //鬼が逃走者を殴った時
+            e.setCancelled(true);
+
+            if (!this.plugin.getNinjaManager().containsNinja(damager) || !this.plugin.getNinjaManager().containsNinja(player)) {
+                return;
+            }
+
+            Ninja damagerNinja = this.plugin.getNinjaManager().getNinjaPlayer(damager);
+            Ninja playerNinja = this.plugin.getNinjaManager().getNinjaPlayer(player);
+
+            damagerNinja.touch(playerNinja);
+        }
     }
 
     //忍者着地

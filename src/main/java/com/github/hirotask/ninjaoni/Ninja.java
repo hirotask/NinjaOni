@@ -2,9 +2,11 @@ package com.github.hirotask.ninjaoni;
 
 import com.github.hirotask.ninjaoni.inventory.ItemManager;
 import com.github.hirotask.ninjaoni.inventory.item.NinjaItem;
+import com.github.hirotask.ninjaoni.utils.MessageManager;
 import java.util.HashMap;
 import java.util.List;
 import lombok.Data;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -110,8 +112,13 @@ public class Ninja {
                     } else {
                         inv.remove(inv.getItem(key));
                     }
+
+                    break;
                 }
             }
+
+            item.execute(this);
+
         }
     }
 
@@ -129,6 +136,22 @@ public class Ninja {
         }
 
         return unableClimbBlocks.contains(m);
+    }
+
+    /**
+     * 忍者を捕まえる
+     */
+    public void touch(Ninja ninja) {
+        if (this.team == Game.Teams.ONI && ninja.getTeam() == Game.Teams.PLAYER) {
+            if(!ninja.isLocked()) {
+                Player ninjaPlayer = ninja.getPlayer();
+                Player oniPlayer = this.getPlayer();
+
+                ninjaPlayer.playSound(ninjaPlayer.getLocation(), Sound.BLOCK_ANVIL_PLACE, 0.3F, 1);
+                MessageManager.sendAll(ChatColor.RED + ninjaPlayer.getName() + ChatColor.WHITE + "は" + ChatColor.DARK_AQUA + oniPlayer.getName() + ChatColor.WHITE + "に確保された！");
+                ninja.setLocked(true);
+            }
+        }
     }
 
 }
