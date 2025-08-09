@@ -9,7 +9,6 @@ object MathUtil {
      * @param angle the angle to normalize
      * @return the normalized angle that will be in the range of [0,360[
      */
-    fun normalAbsoluteAngleDegrees(angle: Double): Double
-        = if (angle % 360 >= 0) angle else angle + 360
-
+    fun normalAbsoluteAngleDegrees(angle: Double): Double =
+        if (angle % 360 >= 0) angle else angle + 360
 }
