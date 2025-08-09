@@ -1,6 +1,9 @@
 package com.github.hirotask.ninjaoni.listener;
 
 import com.github.hirotask.ninjaoni.Ninja;
+import com.github.hirotask.ninjaoni.runnable.GetMoneyTask;
+import com.github.hirotask.ninjaoni.runnable.PlayerOpenTask;
+import com.github.hirotask.ninjaoni.utils.MathUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -63,10 +66,6 @@ public class NinjaMoveListener implements Listener {
     //壁ジャンプ
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-//        if (NinjaOniAPI.getInstance().getGame().getGameState() != Game.GameState.INGAME) {
-//            return;
-//        }
-
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = e.getPlayer();
 
@@ -76,7 +75,7 @@ public class NinjaMoveListener implements Listener {
             Block sxblock = player.getWorld().getBlockAt(player.getLocation().subtract(0, 0, -0.98));
 
             double angle = player.getLocation().getYaw();
-            double yaw = com.github.hirotask.ninjaoni.listener.Util.normalAbsoluteAngleDegrees(angle);
+            double yaw = MathUtil.INSTANCE.normalAbsoluteAngleDegrees(angle);
             double velox = player.getVelocity().getX();
             double veloy = player.getVelocity().getY();
             double veloz = player.getVelocity().getZ();
@@ -152,14 +151,9 @@ public class NinjaMoveListener implements Listener {
     //壁よじ登り
     @EventHandler
     public void onClimb(PlayerMoveEvent e) {
-//        if (NinjaOniAPI.getInstance().getGame().getGameState() != Game.GameState.INGAME) {
-//            return;
-//        }
-
         Player player = e.getPlayer();
 
         if (this.plugin.getNinjaManager().getNinjaPlayer(player) == null) {
-            System.out.println("Ninja is null");
             return;
         }
 
@@ -167,11 +161,11 @@ public class NinjaMoveListener implements Listener {
             return;
         }
 
-        Ninja np = this.plugin.getNinjaManager().getNinjaPlayer(player);
+        Ninja ninja = this.plugin.getNinjaManager().getNinjaPlayer(player);
 
         //player is on ground
         if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.AIR) {
-            np.setClimbing(false);
+            ninja.setClimbing(false);
         }
 
         Block wxblock = player.getWorld().getBlockAt(player.getLocation().subtract(1.05, 0, 0));
@@ -180,53 +174,53 @@ public class NinjaMoveListener implements Listener {
         Block sxblock = player.getWorld().getBlockAt(player.getLocation().subtract(0, 0, -1.05));
 
         double angle = player.getLocation().getYaw();
-        double yaw = com.github.hirotask.ninjaoni.listener.Util.normalAbsoluteAngleDegrees(angle);
+        double yaw = MathUtil.INSTANCE.normalAbsoluteAngleDegrees(angle);
         double velox = player.getVelocity().getX();
         double veloy = player.getVelocity().getY();
         double veloz = player.getVelocity().getZ();
 
-        if (!wxblock.getType().equals(Material.AIR) && !com.github.hirotask.ninjaoni.listener.Util.containsUnableClimbBlocks(wxblock.getType())) {
+        if (!wxblock.getType().equals(Material.AIR) && !ninja.containsUnableClimbBlocks(wxblock.getType())) {
             if (yaw >= 50 && yaw <= 130) {
-                if (!np.isClimbing()) {
+                if (!ninja.isClimbing()) {
                     Vector vector = player.getLocation().getDirection().setY(0.45).setX(0).setZ(0);
                     player.setVelocity(vector);
                     Location location = player.getLocation().subtract(1, 0, 0);
                     player.playSound(location, Sound.BLOCK_LADDER_STEP, 1, 1);
-                    np.setClimbing(true);
+                    ninja.setClimbing(true);
                 }
             }
-        } else if (!nxblock.getType().equals(Material.AIR) && !com.github.hirotask.ninjaoni.listener.Util.containsUnableClimbBlocks(nxblock.getType())) {
+        } else if (!nxblock.getType().equals(Material.AIR) && !ninja.containsUnableClimbBlocks(nxblock.getType())) {
             if (yaw >= 140 && yaw <= 220) {
-                if (!np.isClimbing()) {
+                if (!ninja.isClimbing()) {
                     Vector vector = player.getLocation().getDirection().setY(0.45).setX(0).setZ(0);
                     player.setVelocity(vector);
                     Location location = player.getLocation().subtract(1, 0, 0);
                     player.playSound(location, Sound.BLOCK_LADDER_STEP, 1, 1);
-                    np.setClimbing(true);
+                    ninja.setClimbing(true);
                 }
 
 
             }
-        } else if (!exblock.getType().equals(Material.AIR) && !com.github.hirotask.ninjaoni.listener.Util.containsUnableClimbBlocks(exblock.getType())) {
+        } else if (!exblock.getType().equals(Material.AIR) && !ninja.containsUnableClimbBlocks(exblock.getType())) {
             if (yaw >= 230 && yaw <= 310) {
-                if (!np.isClimbing()) {
+                if (!ninja.isClimbing()) {
                     Vector vector = player.getLocation().getDirection().setY(0.45).setX(0).setZ(0);
                     player.setVelocity(vector);
                     Location location = player.getLocation().subtract(1, 0, 0);
                     player.playSound(location, Sound.BLOCK_LADDER_STEP, 1, 1);
-                    np.setClimbing(true);
+                    ninja.setClimbing(true);
                 }
 
 
             }
-        } else if (!sxblock.getType().equals(Material.AIR) && !com.github.hirotask.ninjaoni.listener.Util.containsUnableClimbBlocks(sxblock.getType())) {
+        } else if (!sxblock.getType().equals(Material.AIR) && !ninja.containsUnableClimbBlocks(sxblock.getType())) {
             if (yaw >= 320 && yaw <= 360 || yaw >= 0 && yaw <= 40) {
-                if (!np.isClimbing()) {
+                if (!ninja.isClimbing()) {
                     Vector vector = player.getLocation().getDirection().setY(0.45).setX(0).setZ(0);
                     player.setVelocity(vector);
                     Location location = player.getLocation().subtract(1, 0, 0);
                     player.playSound(location, Sound.BLOCK_LADDER_STEP, 1, 1);
-                    np.setClimbing(true);
+                    ninja.setClimbing(true);
                 }
             }
         }
@@ -235,10 +229,6 @@ public class NinjaMoveListener implements Listener {
     //梯子高速上り
     @EventHandler
     public void onClimbLadder(PlayerMoveEvent e) {
-//        if (NinjaOniAPI.getInstance().getGame().getGameState() != Game.GameState.INGAME) {
-//            return;
-//        }
-
         Player player = e.getPlayer();
 
         if (this.plugin.getNinjaManager().getNinjaPlayer(player) == null) {
@@ -256,7 +246,7 @@ public class NinjaMoveListener implements Listener {
         Block sxblock = player.getWorld().getBlockAt(player.getLocation().subtract(0, 0, -1.05));
 
         double angle = player.getLocation().getYaw();
-        double yaw = com.github.hirotask.ninjaoni.listener.Util.normalAbsoluteAngleDegrees(angle);
+        double yaw = MathUtil.INSTANCE.normalAbsoluteAngleDegrees(angle);
 
         if (wxblock.getType().equals(Material.LADDER)) {
             if (yaw >= 50 && yaw <= 130) {
@@ -288,10 +278,6 @@ public class NinjaMoveListener implements Listener {
     //トランポリン
     @EventHandler
     public void onJump(PlayerMoveEvent e) {
-//        if (NinjaOniAPI.getInstance().getGame().getGameState() != Game.GameState.INGAME) {
-//            return;
-//        }
-
         Player player = e.getPlayer();
 
         if (this.plugin.getNinjaManager().getNinjaPlayer(player) == null) {
@@ -339,7 +325,7 @@ public class NinjaMoveListener implements Listener {
                     }
 
                     if (stand.getCustomName().equals("money")) {
-                        new com.github.hirotask.ninjaoni.runnable.GetMoneyTask(ninja,stand,3).runTaskTimer(plugin,0L,1L);
+                        new GetMoneyTask(ninja,stand,3).runTaskTimer(plugin,0L,1L);
                     }
 
                 }else if(entity instanceof Player) {
@@ -350,7 +336,7 @@ public class NinjaMoveListener implements Listener {
 
                     if (nin.getTeam() == com.github.hirotask.ninjaoni.Game.Teams.PLAYER) {
                         if (nin.isLocked()) {
-                            new com.github.hirotask.ninjaoni.runnable.PlayerOpenTask(ninja,nin,3).runTaskTimer(plugin,0L,1L);
+                            new PlayerOpenTask(ninja,nin,3).runTaskTimer(plugin,0L,1L);
                         }
                     }
                 }
@@ -359,35 +345,4 @@ public class NinjaMoveListener implements Listener {
 
 
     }
-}
-
-class Util {
-    /**
-     * Normalizes an angle to an absolute angle.
-     * The normalized angle will be in the range from 0 to 360, where 360
-     * itself is not included.
-     *
-     * @param angle the angle to normalize
-     * @return the normalized angle that will be in the range of [0,360[
-     */
-    public static double normalAbsoluteAngleDegrees(double angle) {
-        return (angle %= 360) >= 0 ? angle : (angle + 360);
-    }
-
-    public static boolean containsUnableClimbBlocks(Material m) {
-        java.util.List<Material> unableClimbBlocks = new java.util.ArrayList<Material>();
-
-        unableClimbBlocks.add(Material.LADDER);
-        unableClimbBlocks.add(Material.VINE);
-
-        for(Material material : Material.values()) {
-            if(material.name().endsWith("SLAB")
-            || material.name().endsWith("CARPET")) {
-                unableClimbBlocks.add(material);
-            }
-        }
-
-        return unableClimbBlocks.contains(m);
-    }
-
 }
