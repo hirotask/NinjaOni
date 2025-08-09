@@ -34,13 +34,6 @@ public class NinjaCommand {
             "==================="
     };
 
-    /**
-     * 取得できるアイテム一覧
-     */
-    private String[] getCanGetItems() {
-        return ninjaOni.getItemManager().getNinjaItems().stream().map(NinjaItem::name).toArray(String[]::new);
-    }
-
     private void sendHelpMessage(CommandSender sender, CommandArguments ignoredArgs) {
         for (String msg : helpMsgs) {
             sender.sendMessage(msg);
@@ -142,7 +135,7 @@ public class NinjaCommand {
                         )
                 )
                 .then(new LiteralArgument("getItem")
-                        .then(new MultiLiteralArgument("name", this.getCanGetItems())
+                        .then(new MultiLiteralArgument("name", this.ninjaOni.getItemManager().getNinjaItemMap().keySet().toArray(String[]::new))
                                 .executes(this::getItem)
                         )
                 )
