@@ -1,17 +1,13 @@
 package com.github.hirotask.ninjaoni;
 
+import com.github.hirotask.ninjaoni.inventory.ItemManager;
 import com.github.hirotask.ninjaoni.inventory.item.NinjaItem;
-import com.github.hirotask.ninjaoni.inventory.item.items.Kageoi;
-import com.github.hirotask.ninjaoni.inventory.item.items.Kakure;
-import com.github.hirotask.ninjaoni.inventory.item.items.Kemuri;
-import com.github.hirotask.ninjaoni.inventory.item.items.Kunai;
-import com.github.hirotask.ninjaoni.inventory.item.items.Nenchaku;
-import com.github.hirotask.ninjaoni.inventory.item.items.Shukuchi;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -71,31 +67,13 @@ public class NinjaCommand {
 
         if (itemName == null) return;
 
-        switch (itemName) {
-            case "クナイ" -> {
-                player.sendMessage("クナイをインベントリに追加しました");
-                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kunai()));
-            }
-            case "隠れ玉" -> {
-                player.sendMessage("隠れ玉をインベントリに追加しました");
-                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kakure()));
-            }
-            case "煙玉" -> {
-                player.sendMessage("煙玉をインベントリに追加しました");
-                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kemuri(this.ninjaOni)));
-            }
-            case "影追玉" -> {
-                player.sendMessage("影追玉をインベントリに追加しました");
-                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Kageoi(this.ninjaOni)));
-            }
-            case "粘着玉" -> {
-                player.sendMessage("粘着玉をインベントリに追加しました");
-                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Nenchaku()));
-            }
-            case "縮地" -> {
-                player.sendMessage("縮地をインベントリに追加しました");
-                player.getInventory().addItem(ninjaOni.getItemManager().getItem(new Shukuchi(this.ninjaOni)));
-            }
+        ItemManager itemManager = this.ninjaOni.getItemManager();
+        Map<String, NinjaItem> map = itemManager.getNinjaItemMap();
+        NinjaItem item = map.get(itemName);
+
+        if (item != null) {
+            player.sendMessage(item.name() + "をインベントリに追加しました");
+            player.getInventory().addItem(itemManager.getItem(item));
         }
     }
 
