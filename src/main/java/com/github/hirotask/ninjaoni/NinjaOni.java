@@ -3,6 +3,7 @@ package com.github.hirotask.ninjaoni;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.github.hirotask.ninjaoni.inventory.ItemManager;
+import com.github.hirotask.ninjaoni.listener.BukkitEventListener;
 import com.github.hirotask.ninjaoni.listener.NinjaMoveListener;
 import com.github.hirotask.ninjaoni.listener.NinjaOniListener;
 import com.github.hirotask.ninjaoni.utils.Config;
@@ -33,10 +34,9 @@ public final class NinjaOni extends JavaPlugin {
         this.myConfig = new Config(this);
 
         //リスナーの設定
+        new BukkitEventListener(this);
         new NinjaMoveListener(this);
         new NinjaOniListener(this);
-        new NinjaItemListener(this);
-        new ShopListener(this);
 
         // Runnable の設定
         this.game = new Game(this);
